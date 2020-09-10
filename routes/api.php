@@ -31,12 +31,10 @@ Route::middleware('api')->namespace('Api')->prefix('auth')->group(function ($rou
 
     Route::post('/password/email', 'ForgotPasswordController@sendResetLinkEmail');
     Route::post('/password/reset', 'ResetPasswordController@reset');
-
-
 });
 Route::apiResource('/todos', 'Api\TodoController');
 
 // Route::apiResource('/todos', 'Api\TodoController');
-Route::namespace('Api')->group(function(){
+Route::namespace('Api')->group(function () {
     Route::apiResource('/users', 'UserController', ['except' => ['show', 'store']]);
 });

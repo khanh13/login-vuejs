@@ -11,40 +11,39 @@
             <div class="col-lg-12">
               <div class="login-form">
                 <div class="row">
-                  <router-link to="/todos" class="btn btn-primary">Alll Todos </router-link>
+                  <router-link to="/todos" class="btn btn-primary">All Todos </router-link>
 
                 </div>
                 <div class="text-center">
-                  <h1 class="h4 text-gray-900 mb-4">Create Todo</h1>
+                  <h1 class="h4 text-gray-900 mb-4"> Todo</h1>
                 </div>
 
                 <!-- <div class="alert alert-danger" v-if="error && !success">
                 <p v-if="error == 'login_error'">Validation Errors.</p>
                 <p v-else>Error, unable to connect with these credentials.</p>
               </div> -->
-              <form class="user" @submit.prevent="createTodo" >
+                <form class="user" @submit.prevent="createTodo">
 
-                    <div class="form-group">
+                  <div class="form-group">
 
-                      <div class="form-row">
-                        <div class="col-md-6">
-                          <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Enter Todo Name" v-model="form.name">
-                          <small class="text-danger" v-if="errors.name"> {{ errors.name[0] }} </small>
-                        </div>
-
-                        <div class="col-md-6">
-                          <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Description" v-model="form.description">
-                          <small class="text-danger" v-if="errors.description"> {{ errors.description[0] }} </small>
-                        </div>
-
+                    <div class="form-row">
+                      <div class="col-md-6">
+                        <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Enter Todo Name" v-model="form.name">
+                        <small class="text-danger" v-if="errors.name"> {{ errors.name[0] }} </small>
                       </div>
-                    </div>
 
+                      <div class="col-md-6">
+                        <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Description" v-model="form.description">
+                        <small class="text-danger" v-if="errors.description"> {{ errors.description[0] }} </small>
+                      </div>
 
-                    <div class="form-group">
-                      <button type="submit" class="btn btn-primary btn-block">Submit</button>
                     </div>
-              </form>
+                  </div>
+
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                  </div>
+                </form>
 
                 <hr>
 
@@ -78,16 +77,23 @@ export default {
 
   methods: {
     createTodo() {
+      const token = localStorage.getItem('token')
       axios
-        .post('/api/todos', this.form)
-        .then(() => {
+        .post('/api/todos', this.form, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+
           this.$router.push({ name: 'todos' })
           Notification.success()
         })
+
         .catch((error) => (this.errors = error.response.data.errors))
     },
   },
-}
+    }
 </script>
 
 

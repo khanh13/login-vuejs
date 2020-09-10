@@ -125,8 +125,13 @@ export default {
   },
   methods: {
     allTodo() {
+      const token = localStorage.getItem('token')
       axios
-        .get('/api/todos/')
+        .get('/api/todos/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then(({ data }) => (this.todos = data))
         .catch()
     },
@@ -141,14 +146,26 @@ export default {
         confirmButtonText: 'Yes, delete it!',
       }).then((result) => {
         if (result.isConfirmed) {
+          const token = localStorage.getItem('token')
           axios
-            .delete('/api/todos/' + id)
-            .then(() => {
-            //   this.$router.push({ name: 'todos' })
-            // this.todos = (todo =>{
-            //     return todo.id != id
-            // })
-            this.allTodo()
+            .delete('/api/todos/' + id, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+            .then((res) => {
+                console.log(res.data)
+              if (res.data.status == 'error') {
+                Swal.fire({
+                  icon: 'error',
+                  text: res.data.message,
+                })
+              }
+              //   this.$router.push({ name: 'todos' })
+              // this.todos = (todo =>{
+              //     return todo.id != id
+              // })
+              this.allTodo()
             })
             .catch(() => {
               this.$router.push({ name: 'todos' })

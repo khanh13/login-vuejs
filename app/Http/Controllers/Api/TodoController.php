@@ -10,10 +10,10 @@ use SebastianBergmann\Environment\Console;
 
 class TodoController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('JWT', ['except' => ['index']]);
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
 
     /**
      * Display a listing of the resource.
@@ -88,13 +88,16 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        // if (Gate::allows('isAdmin')) {
+        if (Gate::allows('delete-todo')) {
             $todo = Todo::find($id);
             $todo->delete();
-        // }
-
-        // $todo = Todo::find($id);
-        // $todo->delete();
-        // return false;
+            return response()->json([
+                'status' => 'success'
+            ]);
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'You need authorize to delete!'
+        ]);
     }
 }

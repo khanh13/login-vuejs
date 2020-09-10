@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,16 +14,12 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('JWT', ['except' => ['login', 'register', 'sendPasswordResetLink']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'sendPasswordResetLink']]);
     }
 
-    public function login(Request $request)
+    public function login(LoginUserRequest $request)
     {
-        $validateData = $request->validate([
-            'email' => 'required',
-            'password' => 'required',
-
-        ]);
+        $validateData = $request->all();
 
         $credentials = request(['email', 'password']);
 
@@ -52,6 +49,7 @@ class AuthController extends Controller
 
     public function register(RegisterUserRequest $request)
     {
+        $validateData = $request->all();
         $user = new User;
         $user->email = $request->email;
         $user->name = $request->name;

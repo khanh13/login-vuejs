@@ -89,9 +89,10 @@ export default {
           })
           this.$router.push({ name: 'dashboard' })
         })
-        .catch((error) => console.log(error.response.data))
+        // .catch((error) => console.log(error.response.data))
+        // .catch((error) => (console.log(error.response.data.errors.email)))
 
-        // .catch((error) => (this.errors = error.response.data.errors))
+        .catch((error) => (this.errors = error.response.data.errors))
         .catch(
           Toast.fire({
             icon: 'warning',

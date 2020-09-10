@@ -2150,10 +2150,11 @@ __webpack_require__.r(__webpack_exports__);
         _this.$router.push({
           name: 'dashboard'
         });
-      })["catch"](function (error) {
-        return console.log(error.response.data);
-      }) // .catch((error) => (this.errors = error.response.data.errors))
-      ["catch"](Toast.fire({
+      }) // .catch((error) => console.log(error.response.data))
+      // .catch((error) => (console.log(error.response.data.errors.email)))
+      ["catch"](function (error) {
+        return _this.errors = error.response.data.errors;
+      })["catch"](Toast.fire({
         icon: 'warning',
         title: 'Invalid Email or Password'
       }));
@@ -2202,6 +2203,11 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3236,7 +3242,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {
     if (!User.loggedIn()) {
@@ -3259,7 +3264,12 @@ __webpack_require__.r(__webpack_exports__);
     createTodo: function createTodo() {
       var _this = this;
 
-      axios.post('/api/todos', this.form).then(function () {
+      var token = localStorage.getItem('token');
+      axios.post('/api/todos', this.form, {
+        headers: {
+          Authorization: "Bearer ".concat(token)
+        }
+      }).then(function (res) {
         _this.$router.push({
           name: 'todos'
         });
@@ -3531,7 +3541,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     allTodo: function allTodo() {
       var _this = this;
 
-      axios.get('/api/todos/').then(function (_ref) {
+      var token = localStorage.getItem('token');
+      axios.get('/api/todos/', {
+        headers: {
+          Authorization: "Bearer ".concat(token)
+        }
+      }).then(function (_ref) {
         var data = _ref.data;
         return _this.todos = data;
       })["catch"]();
@@ -3549,11 +3564,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         confirmButtonText: 'Yes, delete it!'
       }).then(function (result) {
         if (result.isConfirmed) {
-          axios["delete"]('/api/todos/' + id).then(function () {
-            //   this.$router.push({ name: 'todos' })
+          var token = localStorage.getItem('token');
+          axios["delete"]('/api/todos/' + id, {
+            headers: {
+              Authorization: "Bearer ".concat(token)
+            }
+          }).then(function (res) {
+            console.log(res.data);
+
+            if (res.data.status == 'error') {
+              Swal.fire({
+                icon: 'error',
+                text: res.data.message
+              });
+            } //   this.$router.push({ name: 'todos' })
             // this.todos = (todo =>{
             //     return todo.id != id
             // })
+
+
             _this2.allTodo();
           })["catch"](function () {
             _this2.$router.push({
@@ -42199,7 +42228,7 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
-* sweetalert2 v9.17.1
+* sweetalert2 v9.17.2
 * Released under the MIT License.
 */
 (function (global, factory) {
@@ -43894,7 +43923,7 @@ process.umask = function() { return 0; };
     onDestroy: undefined,
     scrollbarPadding: true
   };
-  var updatableParams = ['title', 'titleText', 'text', 'html', 'footer', 'icon', 'hideClass', 'customClass', 'allowOutsideClick', 'allowEscapeKey', 'showConfirmButton', 'showCancelButton', 'confirmButtonText', 'confirmButtonAriaLabel', 'confirmButtonColor', 'cancelButtonText', 'cancelButtonAriaLabel', 'cancelButtonColor', 'buttonsStyling', 'reverseButtons', 'showCloseButton', 'closeButtonHtml', 'closeButtonAriaLabel', 'imageUrl', 'imageWidth', 'imageHeight', 'imageAlt', 'progressSteps', 'currentProgressStep', 'onClose', 'onAfterClose', 'onDestroy'];
+  var updatableParams = ['allowEscapeKey', 'allowOutsideClick', 'buttonsStyling', 'cancelButtonAriaLabel', 'cancelButtonColor', 'cancelButtonText', 'closeButtonAriaLabel', 'closeButtonHtml', 'confirmButtonAriaLabel', 'confirmButtonColor', 'confirmButtonText', 'currentProgressStep', 'customClass', 'footer', 'hideClass', 'html', 'icon', 'imageAlt', 'imageHeight', 'imageUrl', 'imageWidth', 'onAfterClose', 'onClose', 'onDestroy', 'progressSteps', 'reverseButtons', 'showCancelButton', 'showCloseButton', 'showConfirmButton', 'text', 'title', 'titleText'];
   var deprecatedParams = {
     animation: 'showClass" and "hideClass'
   };
@@ -45367,7 +45396,7 @@ process.umask = function() { return 0; };
     };
   });
   SweetAlert.DismissReason = DismissReason;
-  SweetAlert.version = '9.17.1';
+  SweetAlert.version = '9.17.2';
 
   var Swal = SweetAlert;
   Swal["default"] = Swal;
@@ -46039,7 +46068,13 @@ var render = function() {
                             _vm.$set(_vm.form, "name", $event.target.value)
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.errors.name
+                        ? _c("small", { staticClass: "text-danger" }, [
+                            _vm._v(" " + _vm._s(_vm.errors.name[0]) + " ")
+                          ])
+                        : _vm._e()
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
@@ -46068,7 +46103,13 @@ var render = function() {
                             _vm.$set(_vm.form, "email", $event.target.value)
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.errors.email
+                        ? _c("small", { staticClass: "text-danger" }, [
+                            _vm._v(" " + _vm._s(_vm.errors.email[0]) + " ")
+                          ])
+                        : _vm._e()
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
@@ -46096,7 +46137,13 @@ var render = function() {
                             _vm.$set(_vm.form, "password", $event.target.value)
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.errors.password
+                        ? _c("small", { staticClass: "text-danger" }, [
+                            _vm._v(" " + _vm._s(_vm.errors.password[0]) + " ")
+                          ])
+                        : _vm._e()
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
@@ -46128,7 +46175,15 @@ var render = function() {
                             )
                           }
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.errors.confirm_password
+                        ? _c("small", { staticClass: "text-danger" }, [
+                            _vm._v(
+                              " " + _vm._s(_vm.errors.confirm_password[0]) + " "
+                            )
+                          ])
+                        : _vm._e()
                     ]),
                     _vm._v(" "),
                     _vm._m(1)
@@ -48694,7 +48749,7 @@ var render = function() {
                         staticClass: "btn btn-primary",
                         attrs: { to: "/todos" }
                       },
-                      [_vm._v("Alll Todos ")]
+                      [_vm._v("All Todos ")]
                     )
                   ],
                   1
@@ -48811,9 +48866,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "text-center" }, [
-      _c("h1", { staticClass: "h4 text-gray-900 mb-4" }, [
-        _vm._v("Create Todo")
-      ])
+      _c("h1", { staticClass: "h4 text-gray-900 mb-4" }, [_vm._v(" Todo")])
     ])
   },
   function() {
@@ -49144,7 +49197,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "text-center" }, [
-      _c("h1", { staticClass: "h4 text-gray-900 mb-4" }, [_vm._v("Alll Todos")])
+      _c("h1", { staticClass: "h4 text-gray-900 mb-4" }, [_vm._v("All Todos")])
     ])
   },
   function() {

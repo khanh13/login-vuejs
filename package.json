@@ -27,7 +27,7 @@
         "@websanova/vue-auth": "^3.3.1",
         "es6-promise": "^4.2.8",
         "noty": "^3.2.0-beta",
-        "sweetalert2": "^9.17.1",
+        "sweetalert2": "^9.17.2",
         "vue-axios": "^2.1.5",
         "vue-router": "^3.4.3"
     }
