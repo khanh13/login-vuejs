@@ -15,7 +15,7 @@
 
                 </div>
                 <div class="text-center">
-                  <h1 class="h4 text-gray-900 mb-4"> Todo</h1>
+                  <h1 class="h4 text-gray-900 mb-4">Create Todo</h1>
                 </div>
 
                 <!-- <div class="alert alert-danger" v-if="error && !success">
