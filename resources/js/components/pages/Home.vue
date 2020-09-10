@@ -1,9 +1,8 @@
 <style type="text.css">
-
 </style>
 
 <template>
-<div class="row justify-content-center">
+  <div class="row justify-content-center">
     <div class="col-xl-10 col-lg-12 col-md-9">
       <div class="card shadow-sm my-5">
         <div class="card-body p-0">
@@ -23,7 +22,7 @@
                 <div class="text-center">
                   <router-link :to="{name: 'register'}" class="btn btn-primary btn-block">Create an Account!</router-link>
                 </div>
-                
+
               </div>
             </div>
           </div>
@@ -34,5 +33,11 @@
 </template>
 
 <script type="text/javascript">
-
+export default {
+  created() {
+    if (User.loggedIn()) {
+      this.$router.push({ name: 'dashboard' })
+    }
+  },
+}
 </script>

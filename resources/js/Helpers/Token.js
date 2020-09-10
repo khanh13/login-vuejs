@@ -1,13 +1,15 @@
 class Token {
-
     isValid(token) {
         const payload = this.payload(token)
         if (payload) {
-            return payload.iss = "http://login-vuejs.test/api/auth/login" || "http://login-vuejs.test/api/auth/register" ? true : false
+            return (payload.iss =
+                'http://login-vuejs.test/api/auth/login' ||
+                'http://login-vuejs.test/api/auth/register'
+                    ? true
+                    : false)
         }
         return false
     }
-
 
     payload(token) {
         const payload = token.split('.')[1]
@@ -17,9 +19,6 @@ class Token {
     decode(payload) {
         return JSON.parse(atob(payload))
     }
-
-
-
 }
 
 export default Token = new Token()

@@ -18,19 +18,25 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::middleware('api')->prefix('auth')->group(function ($router) {
+Route::middleware('api')->namespace('Api')->prefix('auth')->group(function ($router) {
 
-    Route::post('login', 'Api\AuthController@login');
-    Route::post('register', 'Api\AuthController@register');
-    Route::post('refresh', 'Api\AuthController@refresh');
+    Route::post('login', 'AuthController@login');
+    Route::post('register', 'AuthController@register');
+    Route::post('refresh', 'AuthController@refresh');
     Route::post('logout', 'AuthController@logout');
     Route::post('me', 'AuthController@me');
-    
+
     // Route::post('reset-password', 'Api\ForgotPasswordController@sendPasswordResetLink');
     // Route::post('reset/password', 'AuthController@callResetPassword');
 
-    Route::post('/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
-    Route::post('/password/reset', 'Api\ResetPasswordController@reset');
+    Route::post('/password/email', 'ForgotPasswordController@sendResetLinkEmail');
+    Route::post('/password/reset', 'ResetPasswordController@reset');
 
-    
+
+});
+Route::apiResource('/todos', 'Api\TodoController');
+
+// Route::apiResource('/todos', 'Api\TodoController');
+Route::namespace('Api')->group(function(){
+    Route::apiResource('/users', 'UserController', ['except' => ['show', 'store']]);
 });
