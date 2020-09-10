@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +16,13 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register', 'sendPasswordResetLink']]);
     }
 
-    public function login(LoginUserRequest $request)
+    public function login(Request $request)
     {
-        $validateData = $request->all();
+        $validateData = $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+
+        ]);
 
         $credentials = request(['email', 'password']);
 
@@ -49,7 +52,6 @@ class AuthController extends Controller
 
     public function register(RegisterUserRequest $request)
     {
-        $validateData = $request->all();
         $user = new User;
         $user->email = $request->email;
         $user->name = $request->name;
