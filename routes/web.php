@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,7 @@ Route::get('/', function () {
 Route::get('/{vue_capture?}',function () {
     return view('welcome');
 })->where('vue_capture', '[\/\w\.-]*');
+
+if (App::environment('production')) {
+    URL::forceScheme('https');
+}

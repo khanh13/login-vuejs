@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\URL;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+if (App::environment('production')) {
+    URL::forceScheme('https');
+}
+
 
 Route::middleware('api')->namespace('Api')->prefix('auth')->group(function ($router) {
 
