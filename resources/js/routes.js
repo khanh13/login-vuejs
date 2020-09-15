@@ -10,6 +10,7 @@ import Todo from './components/pages/todo/index.vue'
 import EditTodo from './components/pages/todo/edit.vue'
 import User from './components/auth/user/index.vue'
 import EditUser from './components/auth/user/edit.vue'
+import ActivateUser from './components/auth/user/activate.vue'
 
 export const routes = [
     {
@@ -71,5 +72,10 @@ export const routes = [
         path: '/edit-user/:id',
         name: 'edit-user',
         component: EditUser
+    },
+    {
+        path: '/activate-user/:id',
+        name: 'actiavte-user',
+        component: ActivateUser
     }
 ]

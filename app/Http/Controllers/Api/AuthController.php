@@ -3,39 +3,73 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Role;
+use App\Services\UserService;
+use App\Helpers\ResponseHelper;
+use Illuminate\Support\Facades\Mail;
+use App\Mails\RegisterUserMail;
+use App\Models\UserActivation;
+use App\Repositories\UserActivationToken\UserActivationTokenRepositoryInterface;
+use App\Services\UserActivationTokenService;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    protected $userService;
+
+    protected $userActivationTokenService;
+
+    protected $responseHelper;
+
+    protected $userActivationTokenRepositoryInterface;
+
+    public function __construct(UserService $userService, UserActivationTokenService $userActivationTokenService, UserActivationTokenRepositoryInterface $userActivationTokenRepositoryInterface, ResponseHelper $responseHelper)
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'sendPasswordResetLink']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'sendPasswordResetLink', 'activateEmail']]);
+
+        $this->userService = $userService;
+
+        $this->responseHelper = $responseHelper;
+
+        $this->userActivationTokenService = $userActivationTokenService;
+
+        $this->userActivationTokenRepositoryInterface = $userActivationTokenRepositoryInterface;
     }
 
-    public function login(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        $validateData = $request->validate([
-            'email' => 'required',
-            'password' => 'required',
+        $user = $this->userService->registerUser($request->all());
 
-        ]);
+        if ($user) {
+            $token = $this->userActivationTokenService->createNewToken($user->id);
+            //  dd(url());
+            Mail::to($user->email)->send(new RegisterUserMail($user, $token->token));
 
-        $credentials = request(['email', 'password']);
+            return $this->responseHelper->successResponse(true, 'Register Email has been sent!', $user);
+        }
 
-        if (!$token = $this->guard()->attempt($credentials)) {
-            return response()->json(['error' => 'Email or Password is Invalid'], 401);
+        return $this->responseHelper->errorResponse(false, 'Oops! Something went wrong', 401);
+    }
+
+    public function login(LoginUserRequest $request)
+    {
+        $checkActivated = $this->userService->checkUserIsActivated($request->email);
+
+        if (!$checkActivated) {
+            return $this->responseHelper->errorResponse(false, 'User Needs To Activate Account', 401);
+        }
+
+        // $credentials = $request->validated();
+        $credentials = $request->all();
+
+
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'The provided credentials are incorrect'], 401);
         }
 
         return $this->respondWithToken($token);
-    }
-
-    public function me()
-    {
-        return response()->json(auth()->user());
     }
 
     public function logout()
@@ -43,26 +77,6 @@ class AuthController extends Controller
         auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
-
-    public function register(RegisterUserRequest $request)
-    {
-        $user = new User;
-        $user->email = $request->email;
-        $user->name = $request->name;
-        $user->password = bcrypt($request->password);
-        $user->save();
-
-        $role = Role::select('id')->where('name', 'user')->first();
-
-        $user->roles()->attach($role);
-
-        return $this->login($request);
     }
 
     protected function respondWithToken($token)
@@ -77,8 +91,54 @@ class AuthController extends Controller
         ]);
     }
 
-    private function guard()
+    // public function login(LoginUserRequest $request)
+    // {
+    //     $checkActivated = $this->userService->checkUserIsActivated($request->email);
+
+    //     if (!$checkActivated) {
+    //         return $this->responseHelper->errorResponse(false, 'User Needs To Activate Account', 401);
+    //     }
+
+    //     $user = $this->userService->loginUser($request->all());
+
+    //     if ($user) {
+    //         $token = $user->createToken('token-login');
+
+    //         $data = [
+    //             'user' => $user,
+    //             'token-type' => 'Bearer',
+    //             'access_token' => $token->plainTextToken,
+    //         ];
+
+    //         return $this->responseHelper->successResponse(true, 'Logged in', $data);
+    //     }
+
+    //     return $this->responseHelper->errorResponse(false, 'The provided credentials are incorrect', 401);
+    // }
+
+    // public function logout()
+    // {
+    //     if (Auth::user()) {
+    //         Auth::user()->tokens()->delete();
+    //     }
+
+    //     return $this->responseHelper->successResponse(true, 'Logged out', 200);
+    // }
+
+    // public function me()
+    // {
+    //     $user = Auth::user();
+    //     // return $request->user();
+
+    //     return $this->responseHelper->successResponse(true, 'User information', $user);
+    // }
+
+    public function activateEmail($code)
     {
-        return Auth::guard();
+        $userId = $this->userActivationTokenService->checkToken($code);
+
+        // dd($user->id);
+        return redirect('login');
+        // return $this->responseHelper->successResponse(true, "Activate Email", $checkToken);
     }
 }

@@ -28,12 +28,12 @@
 
                     <div class="form-row">
                       <div class="col-md-6">
-                        <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Enter Todo Name" v-model="form.name">
+                        <input type="text" class="form-control" placeholder="Enter Todo Name" v-model="form.name">
                         <small class="text-danger" v-if="errors.name"> {{ errors.name[0] }} </small>
                       </div>
 
                       <div class="col-md-6">
-                        <input type="text" class="form-control" id="exampleInputFirstName" placeholder="Description" v-model="form.description">
+                        <input type="text" class="form-control" placeholder="Description" v-model="form.description">
                         <small class="text-danger" v-if="errors.description"> {{ errors.description[0] }} </small>
                       </div>
 

@@ -85,10 +85,10 @@ export default {
       axios
         .post('/api/auth/register', this.form)
         .then((res) => {
-          User.responseAfterLogin(res)
+          this.$router.push({ name: 'dashboard' })
           Toast.fire({
             icon: 'success',
-            title: 'Signed in successfully',
+            title: 'Registered successfully, Please vefiry your email address to login!',
           })
           this.$router.push({ name: 'dashboard' })
         })

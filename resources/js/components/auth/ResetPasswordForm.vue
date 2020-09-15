@@ -39,14 +39,14 @@ export default {
           email: null,
           password: null,
           password_confirmation: null,
-        
+
         },
-        
+
       }
     },
     methods: {
         resetPassword() {
-            axios.post("/api/auth/password/reset", this.form)
+            axios.post("/api/password/reset", this.form)
             .then(result => {
                 // console.log(result.data);
                 this.$router.push({name: 'login'})

@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Todo\StoreTodoRequest;
 use Illuminate\Http\Request;
 use App\Models\Todo;
 use Illuminate\Support\Facades\Gate;
 use SebastianBergmann\Environment\Console;
+use App\Services\TodoService;
 
 class TodoController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
+    protected $todoService;
 
+    public function __construct(TodoService $todoService) {
+        $this->todoService = $todoService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -32,19 +34,17 @@ class TodoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTodoRequest $request)
     {
-        // return Task::create($request->all());
-        $validateData = $request->validate([
-            'name' => 'required|unique:todos|max:255',
-            'description' => 'required|max:255'
+        $newTodo = $this->todoService->createTodo($request->all());
+
+        return response()->json([
+            'data' => [
+                'status' => true,
+                'message' => 'Created a new Todo',
+                'data' => $newTodo 
+            ]
         ]);
-
-        $todo = new Todo;
-        $todo->name = $request->name;
-        $todo->description = $request->description;
-
-        $todo->save();
     }
 
     /**

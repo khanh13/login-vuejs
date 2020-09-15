@@ -15,7 +15,7 @@
                     <h1 class="h4 text-gray-900 mb-4">Reset Password</h1>
                   </div>
                   <form @submit.prevent="requestResetPassword">
-                
+
                     <div class="form-group">
                     <input type="email" class="form-control" id="exampleInputEmail" aria-describedby="emailHelp"
                         placeholder="Enter Email Address" v-model="form.email" required>
@@ -25,7 +25,7 @@
                       <button type="submit" class="btn btn-primary btn-block">Submit</button>
                     </div>
                     <hr>
-                   
+
                   </form>
                   <hr>
                   <div class="text-center">
@@ -54,7 +54,7 @@ export default {
     },
     methods:{
     requestResetPassword(){
-      axios.post('/api/auth/password/email',this.form)
+      axios.post('/api/password/email',this.form)
       .then(res => {
         Toast.fire({
           icon: 'success',
@@ -64,7 +64,7 @@ export default {
       })
 
        .catch(error =>this.errors = error.response.data.errors)
-       
+
     }
   }
 }

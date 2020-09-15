@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Notifications\PasswordResetNotification;
 use App\Models\Role;
+use Laravel\Sanctum\HasApiTokens;
+use App\Models\Todo;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -45,19 +47,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
     public function getJWTCustomClaims()
     {
         return [];
     }
 
-    /**
-     * Override the mail body for reset password notification mail.
-     */
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new PasswordResetNotification($token));

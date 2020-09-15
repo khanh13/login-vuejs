@@ -14,27 +14,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::post('/activate-email/{code}', 'Api\AuthController@activateEmail');
 
-Route::middleware('api')->namespace('Api')->prefix('auth')->group(function ($router) {
-
-    Route::post('login', 'AuthController@login');
+Route::post('/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail');
+Route::post('/password/reset', 'Api\ResetPasswordController@reset');
+Route::middleware('api')->namespace('Api')->group(function () {
     Route::post('register', 'AuthController@register');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::post('logout', 'AuthController@logout');
-    Route::post('me', 'AuthController@me');
+    Route::post('login', 'AuthController@login')->name('login');
 
-    // Route::post('reset-password', 'Api\ForgotPasswordController@sendPasswordResetLink');
-    // Route::post('reset/password', 'AuthController@callResetPassword');
 
-    Route::post('/password/email', 'ForgotPasswordController@sendResetLinkEmail');
-    Route::post('/password/reset', 'ResetPasswordController@reset');
+    // Auth routes
+    Route::middleware('auth:api')->prefix('auth')->group(function () {
+        Route::post('logout', 'AuthController@logout');
+        Route::get('me', 'AuthController@me');
+    });
 });
-Route::apiResource('/todos', 'Api\TodoController');
 
-// Route::apiResource('/todos', 'Api\TodoController');
-Route::namespace('Api')->group(function () {
+Route::middleware('auth:api')->namespace('Api')->group(function () {
+    // Todo routes
+    Route::apiResource('/todos', 'TodoController');
+
+    // User routes
+    Route::get('users/me', 'UserController@me');
     Route::apiResource('/users', 'UserController', ['except' => ['show', 'store']]);
 });
